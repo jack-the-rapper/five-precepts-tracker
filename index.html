@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Five Precepts Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        main {
+            margin: 20px;
+        }
+        .log-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background-color: white;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Five Precepts Tracker</h1>
+    </header>
+    <main>
+        <h2>Log an Instance</h2>
+        <form id="logForm">
+            <label for="precept">Select Precept:</label>
+            <select id="precept" required>
+                <option value="">--Select Precept--</option>
+                <option value="1">1: Refrain from harming living beings</option>
+                <option value="2">2: Refrain from taking what is not given</option>
+                <option value="3">3: Refrain from sexual misconduct</option>
+                <option value="4">4: Refrain from false speech</option>
+                <option value="5">5: Refrain from intoxicating drinks and drugs</option>
+            </select>
+            <button type="submit">Log Precept Break</button>
+        </form>
+
+        <h2>Logged Entries</h2>
+        <div id="logContainer"></div>
+    </main>
+
+    <script>
+        const logForm = document.getElementById('logForm');
+        const logContainer = document.getElementById('logContainer');
+
+        const logs = JSON.parse(localStorage.getItem('preceptLogs')) || [];
+
+        function renderLogs() {
+            logContainer.innerHTML = '';
+            logs.forEach((log, index) => {
+                const logDiv = document.createElement('div');
+                logDiv.className = 'log-entry';
+                logDiv.innerHTML = `
+                    <span>${log.timestamp}: Precept ${log.precept}</span>
+                    <button onclick="deleteLog(${index})">Delete</button>
+                `;
+                logContainer.appendChild(logDiv);
+            });
+        }
+
+        function deleteLog(index) {
+            logs.splice(index, 1);
+            localStorage.setItem('preceptLogs', JSON.stringify(logs));
+            renderLogs();
+        }
+
+        logForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const precept = document.getElementById('precept').value;
+            if (!precept) return;
+
+            const timestamp = new Date().toLocaleString();
+            logs.push({ precept, timestamp });
+            localStorage.setItem('preceptLogs', JSON.stringify(logs));
+            renderLogs();
+            logForm.reset();
+        });
+
+        // Initial render
+        renderLogs();
+    </script>
+</body>
+</html>
