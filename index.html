@@ -6,40 +6,107 @@
     <title>Five Precepts Tracker</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f7f7f7;
+            background: linear-gradient(to bottom, #f3eac2, #d4a373);
+            color: #2c3e50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
         }
         header {
-            background-color: #4CAF50;
-            color: white;
-            padding: 1rem;
+            background-color: #6a994e;
+            color: #fff;
+            padding: 1.5rem;
             text-align: center;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            font-size: 2rem;
+            margin: 0;
         }
         main {
-            margin: 20px;
+            flex: 1;
+            width: 90%;
+            max-width: 600px;
+            background: #ffffffdd;
+            border-radius: 12px;
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+            margin: 20px auto;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #6a994e;
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        label {
+            font-weight: bold;
+        }
+        select, textarea {
+            font-size: 1rem;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #6a994e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #58874e;
         }
         .log-entry {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
+            flex-direction: column;
+            padding: 15px;
+            margin-bottom: 15px;
             border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            background-color: white;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        button {
-            background-color: #4CAF50;
+        .log-entry span {
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        .log-entry button {
+            align-self: flex-end;
+            background-color: #e76f51;
             color: white;
             border: none;
-            border-radius: 5px;
-            padding: 10px;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 0.9rem;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
-        button:hover {
-            background-color: #45a049;
+        .log-entry button:hover {
+            background-color: #d64a3a;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #6a994e;
+            color: white;
+            width: 100%;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
@@ -59,13 +126,16 @@
                 <option value="4">4: Refrain from false speech</option>
                 <option value="5">5: Refrain from intoxicating drinks and drugs</option>
             </select>
+            <textarea id="reflection" placeholder="Add your comment or reflection here (optional)..."></textarea>
             <button type="submit">Log Precept Break</button>
         </form>
 
         <h2>Logged Entries</h2>
         <div id="logContainer"></div>
     </main>
-
+    <footer>
+        <p>Mindfully tracking the Five Precepts</p>
+    </footer>
     <script>
         const logForm = document.getElementById('logForm');
         const logContainer = document.getElementById('logContainer');
@@ -79,6 +149,7 @@
                 logDiv.className = 'log-entry';
                 logDiv.innerHTML = `
                     <span>${log.timestamp}: Precept ${log.precept}</span>
+                    <span>${log.reflection ? `Reflection: ${log.reflection}` : ''}</span>
                     <button onclick="deleteLog(${index})">Delete</button>
                 `;
                 logContainer.appendChild(logDiv);
@@ -94,10 +165,11 @@
         logForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const precept = document.getElementById('precept').value;
+            const reflection = document.getElementById('reflection').value;
             if (!precept) return;
 
             const timestamp = new Date().toLocaleString();
-            logs.push({ precept, timestamp });
+            logs.push({ precept, reflection, timestamp });
             localStorage.setItem('preceptLogs', JSON.stringify(logs));
             renderLogs();
             logForm.reset();
